@@ -6,20 +6,20 @@
     <style>
         body { background:#000; color:#ffd700; font-family:sans-serif; text-align:center; }
         .card { border:2px solid #ffd700; padding:20px; border-radius:15px; margin:10px; background:#111; }
-        .menu { position:absolute; top:10px; right:10px; cursor:pointer; }
-        button { background:#ffd700; padding:15px; width:100%; border:none; font-weight:bold; cursor:pointer; margin-top:10px; }
+        .menu { position:absolute; top:10px; right:10px; cursor:pointer; font-size: 30px; }
+        button { background:#ffd700; padding:15px; width:100%; border:none; font-weight:bold; cursor:pointer; margin-top:10px; border-radius: 5px; }
     </style>
 </head>
 <body>
     <div class="menu" onclick="toggleMenu()">⋮</div>
-    <div id="nav" style="display:none;">
+    <div id="nav" style="display:none;" class="card">
         <button onclick="alert('Version 1.0\nDeveloped by SD BALOCH')">About</button>
         <button onclick="localStorage.clear(); location.reload();">Reset Device</button>
     </div>
 
     <div id="p1" class="card">
         <h1>ALBALOSHI HM</h1>
-        <input type="text" id="devID" placeholder="Enter ESP ID"><br><br>
+        <input type="text" id="devID" placeholder="Enter ESP ID" style="padding:10px; width:80%;"><br><br>
         <button onclick="connect()">Connect to Device</button>
     </div>
 
@@ -36,15 +36,28 @@
 
         window.connect = () => {
             const id = document.getElementById('devID').value;
+            if(!id) { alert("Please enter ID"); return; }
             localStorage.setItem('id', id);
             document.getElementById('p1').style.display = 'none';
             document.getElementById('p2').style.display = 'block';
+            
+            const container = document.getElementById('switches');
+            container.innerHTML = ""; // Clear existing
             for(let i=1; i<=8; i++) {
-                document.getElementById('switches').innerHTML += <button onclick="toggle('${id}', ${i})">Switch ${i}</button>;
+                // Corrected line with backticks
+                container.innerHTML += <button onclick="toggle('${id}', ${i})">Switch ${i}</button>;
             }
         };
-        window.toggle = (id, i) => set(ref(db, 'devices/'+id+'/switch'+i), 1);
-        window.toggleMenu = () => document.getElementById('nav').style.display = document.getElementById('nav').style.display=='none' ? 'block' : 'none';
+
+        window.toggle = (id, i) => {
+            set(ref(db, 'devices/'+id+'/switch'+i), 1);
+            alert("Switch " + i + " Command Sent!");
+        };
+
+        window.toggleMenu = () => {
+            let nav = document.getElementById('nav');
+            nav.style.display = nav.style.display === 'none' ? 'block' : 'none';
+        };
     </script>
 </body>
 </html>
