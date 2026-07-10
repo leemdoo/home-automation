@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ALBALOSHI HM</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body { background:#000; color:#ffd700; font-family:sans-serif; text-align:center; }
+        .card { border:2px solid #ffd700; padding:20px; border-radius:15px; margin:10px; background:#111; }
+        .menu { position:absolute; top:10px; right:10px; cursor:pointer; }
+        button { background:#ffd700; padding:15px; width:100%; border:none; font-weight:bold; cursor:pointer; margin-top:10px; }
+    </style>
+</head>
+<body>
+    <div class="menu" onclick="toggleMenu()">⋮</div>
+    <div id="nav" style="display:none;">
+        <button onclick="alert('Version 1.0\nDeveloped by SD BALOCH')">About</button>
+        <button onclick="localStorage.clear(); location.reload();">Reset Device</button>
+    </div>
+
+    <div id="p1" class="card">
+        <h1>ALBALOSHI HM</h1>
+        <input type="text" id="devID" placeholder="Enter ESP ID"><br><br>
+        <button onclick="connect()">Connect to Device</button>
+    </div>
+
+    <div id="p2" class="card" style="display:none;">
+        <h2 id="title">Control Panel</h2>
+        <div id="switches"></div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+        
+        const db = getDatabase(initializeApp({databaseURL: "https://albaloshi-hm-23aeb-default-rtdb.firebaseio.com/"}));
+
+        window.connect = () => {
+            const id = document.getElementById('devID').value;
+            localStorage.setItem('id', id);
+            document.getElementById('p1').style.display = 'none';
+            document.getElementById('p2').style.display = 'block';
+            for(let i=1; i<=8; i++) {
+                document.getElementById('switches').innerHTML += <button onclick="toggle('${id}', ${i})">Switch ${i}</button>;
+            }
+        };
+        window.toggle = (id, i) => set(ref(db, 'devices/'+id+'/switch'+i), 1);
+        window.toggleMenu = () => document.getElementById('nav').style.display = document.getElementById('nav').style.display=='none' ? 'block' : 'none';
+    </script>
+</body>
+</html>
